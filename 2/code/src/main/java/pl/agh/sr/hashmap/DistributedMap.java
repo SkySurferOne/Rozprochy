@@ -40,11 +40,9 @@ public class DistributedMap implements SimpleStringMap {
     }
 
     private void joinChannel() {
-        System.setProperty("java.net.preferIPv4Stack", "true");
-
         ProtocolStack protocolStack = new ProtocolStack();
         channel.setProtocolStack(protocolStack);
-        channel.setReceiver(new DistributedMapReceiver(hashMap));
+        channel.setReceiver(new DistributedMapReceiver(channel, hashMap));
 
         try {
             extendProtocolStack(protocolStack, address);

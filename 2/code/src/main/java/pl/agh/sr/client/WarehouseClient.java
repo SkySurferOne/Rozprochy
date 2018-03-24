@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.Scanner;
 
 public class WarehouseClient implements Runnable {
-    private JChannel channel;
     private String address;
     private final String clusterName = "warehouse";
     private DistributedMap distributedMap;

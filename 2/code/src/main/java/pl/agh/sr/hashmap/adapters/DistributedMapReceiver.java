@@ -1,8 +1,7 @@
 package pl.agh.sr.hashmap.adapters;
 
 import com.google.protobuf.InvalidProtocolBufferException;
-import org.jgroups.Message;
-import org.jgroups.ReceiverAdapter;
+import org.jgroups.*;
 import pl.agh.sr.protos.HashMapOperationProtos.HashMapState;
 import pl.agh.sr.protos.HashMapOperationProtos.HashMapOperation;
 
@@ -13,9 +12,11 @@ import java.util.Map;
 
 public class DistributedMapReceiver extends ReceiverAdapter {
     private Map<String, String> hashMap;
+    private final JChannel channel;
 
-    public DistributedMapReceiver( Map<String, String> hashMap) {
+    public DistributedMapReceiver(JChannel channel, Map<String, String> hashMap) {
         this.hashMap = hashMap;
+        this.channel = channel;
     }
 
     @Override
@@ -72,6 +73,18 @@ public class DistributedMapReceiver extends ReceiverAdapter {
 
                 hashMap.put(key, value);
             }
+        }
+    }
+
+    @Override
+    public void viewAccepted(View newView) {
+        handleView(channel, newView);
+    }
+
+    private void handleView(JChannel channel, View newView) {
+        if(newView instanceof MergeView) {
+            ViewHandler handler = new ViewHandler(channel, (MergeView) newView);
+            handler.start();
         }
     }
 }

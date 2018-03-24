@@ -1,0 +1,24 @@
+syntax = "proto2";
+ 
+option java_package = "pl.agh.sr.protos";
+option java_outer_classname = "HashMapOperationProtos";
+
+message HashMapOperation {
+    required OperationType type = 1;
+    required string key = 2;
+    optional string value = 3;
+
+    enum OperationType {
+        PUT = 0;
+        REMOVE = 1;
+    }
+}
+
+message HashMapState {
+	message Entry {
+		required string key = 1;
+    	required string value = 2;
+	}
+
+	repeated Entry entries = 1;
+}

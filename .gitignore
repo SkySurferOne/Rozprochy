@@ -1,0 +1,7 @@
+.idea/
+*.class
+res/
+*.zip
+.gradle/
+build/
+oswiadczenie.txt

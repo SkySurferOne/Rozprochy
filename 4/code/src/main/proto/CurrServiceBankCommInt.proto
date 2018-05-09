@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "sr.middleware.proto";
+option java_outer_classname = "CurrServiceBankCommInt";
+
+enum CurrencyType {
+    PLN = 0;
+    EUR = 1;
+    USD = 2;
+    CZK = 3;
+    GBP = 4;
+}
+
+message CurrencyStatus {
+    CurrencyType currencyType = 1;
+    double purchaseValue = 2;
+    double saleValue = 3;
+}
+
+message CurrencyStatusCollection {
+    repeated CurrencyStatus currencyStatus = 1;
+}
+
+message CurrencyTypeCollection {
+    repeated CurrencyType currencyType = 1;
+}
+
+service CurrencyService {
+    rpc GetCurrencyStatusCollection(CurrencyTypeCollection) returns (CurrencyStatusCollection) {}
+    rpc GetCurrencyStatusCollectionStream(CurrencyTypeCollection) returns (stream CurrencyStatusCollection) {}
+}

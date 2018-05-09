@@ -7,12 +7,22 @@ Ice.loadSlice('../code/src/main/slice/CurrBankCommInt.ice')
 import sr.middleware.slice as Slice
 
 
-class BankClient(Ice.Application):
+class UserAccount():
 
+    def __init__(self, id, proxy, is_premium):
+        self.id = id
+        self.proxy = proxy
+        self.is_premium = is_premium
+
+    def check_account_status(self):
+        return self.proxy.checkAccountStatus(self.id)
+
+
+class BankClient(Ice.Application):
 
     def __init__(self):
         self.twoway = None
-        self.user_proxy = None
+        self.user = None
         Ice.Application.__init__(self, Ice.Application.NoSignalHandling)
 
     def run(self, args):
@@ -38,13 +48,13 @@ class BankClient(Ice.Application):
                 sys.stdout.flush()
                 c = sys.stdin.readline().strip()
 
-                if c == 'create-account':
+                if c == 'create-account' or c == 'ca':
                     self.create_account()
 
-                if c == 'log-in':
+                if c == 'log-in' or c == 'li':
                     self.login()
 
-                if c == 'account-status':
+                if c == 'account-status' or c == 'as':
                     self.account_status()
 
             except KeyboardInterrupt:
@@ -57,19 +67,28 @@ class BankClient(Ice.Application):
         return 0
 
     def account_status(self):
-
+        if self.user is None:
+            print("You are not logged in")
+        else:
+            account_status = self.user.check_account_status()
+            print("Your account status: "+str(account_status))
 
     def login(self):
         print('Write your account id: ', end='', flush=True)
         id = sys.stdin.readline().strip()
 
         try:
-            self.user_proxy = self.twoway.logInAsPremiumUser(id)
+            user_proxy = self.twoway.logInAsPremiumUser(id)
+            # print(user_proxy)
+            premium = True
+            self.user = UserAccount(id, user_proxy, premium)
             print('Logged as premium user')
         except Slice.UserDoesNotExist:
             print("User with that id does not exist")
         except Slice.PermissionViolation:
-            self.user_proxy = self.twoway.logInAsStandardUser(id)
+            user_proxy = self.twoway.logInAsStandardUser(id)
+            premium = False
+            self.user = UserAccount(id, user_proxy, premium)
             print('Logged as standard user')
 
     def create_account(self):

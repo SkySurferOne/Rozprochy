@@ -33,14 +33,15 @@ public class FactoryImpl extends _FactoryDisp {
         UserEntity.UserType userType =  userInfo.monthlyIncome < incomeThreshold ? UserEntity.UserType.STANDARD : UserEntity.UserType.PREMIUM;
         UserEntity userEntity = new UserEntity(userInfo.firstname, userInfo.lastname,
                 userInfo.peselNumber, userInfo.monthlyIncome, userType);
+        userEntity.setAccountState(2000.50);
         UUID uuid = UUID.randomUUID();
         userStorage.put(uuid, userEntity);
 
         if (userType == UserEntity.UserType.STANDARD) {
-            PremiumUserImpl premiumUser = new PremiumUserImpl();
+            PremiumUserImpl premiumUser = new PremiumUserImpl(userStorage);
             adapter.add(premiumUser, new Identity(userEntity.getPeselNumber(), userEntity.getUserType().toString()));
         } else {
-            StandardUserImpl standardUser = new StandardUserImpl();
+            StandardUserImpl standardUser = new StandardUserImpl(userStorage);
             adapter.add(standardUser, new Identity(userEntity.getPeselNumber(), userEntity.getUserType().toString()));
         }
 
@@ -62,7 +63,7 @@ public class FactoryImpl extends _FactoryDisp {
         Ice.ObjectPrx base = communicator.stringToProxy(s1);
         logger.info("Standard user "+userEntity.getFirstname()+" "+userEntity.getLastname()+" logged in");
 
-        return StandardUserPrxHelper.checkedCast(base);
+        return StandardUserPrxHelper.uncheckedCast(base);
     }
 
     @Override
@@ -81,7 +82,8 @@ public class FactoryImpl extends _FactoryDisp {
                 "tcp -h "+bankServerHost+" -p "+bankServerPort+":udp -h "+bankServerHost+" -p "+bankServerPort;
         Ice.ObjectPrx base = communicator.stringToProxy(s1);
         logger.info("Premium user "+userEntity.getFirstname()+" "+userEntity.getLastname()+" logged in");
+        // System.out.println(base.toString());
 
-        return PremiumUserPrxHelper.checkedCast(base);
+        return PremiumUserPrxHelper.uncheckedCast(base);
     }
 }

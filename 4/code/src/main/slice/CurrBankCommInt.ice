@@ -33,7 +33,7 @@ module sr
         exception UserDoesNotExist {};
 
         interface StandardUser {
-            double checkAccountStatus();
+            double checkAccountStatus(string id) throws UserDoesNotExist;
         };
 
         interface PremiumUser extends StandardUser {

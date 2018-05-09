@@ -43,13 +43,13 @@ public class CurrencyStorageRefresher implements Runnable {
 
                 for (CurrencyStatus currencyStatus : list) {
                     String name = currencyStatus.getCurrencyType().toString();
-                    double puchraseValue = currencyStatus.getPurchaseValue();
-                    double saleValuse = currencyStatus.getSaleValue();
+                    double purchaseValue = currencyStatus.getPurchaseValue();
+                    double saleValue = currencyStatus.getSaleValue();
 
-                    CurrencyEntity currencyEntity = new CurrencyEntity(puchraseValue, saleValuse, name);
+                    CurrencyEntity currencyEntity = new CurrencyEntity(purchaseValue, saleValue, name);
                     currencyStorage.put(name, currencyEntity);
 
-                    // logger.info(name + ", puchrase value: "+puchraseValue+", sale value: "+saleValuse);
+                    // logger.info(name + ", puchrase value: "+purchaseValue+", sale value: "+saleValue);
                 }
 
 

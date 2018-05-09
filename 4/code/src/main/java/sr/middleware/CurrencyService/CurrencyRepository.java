@@ -31,17 +31,31 @@ public class CurrencyRepository {
         return db.entrySet()
                 .stream()
                 .filter(entry -> list.contains(entry.getKey()))
-                .map(CurrencyRepository::addVariation)
+                .map(ct -> {
+                    if (ct.getKey() == CurrencyType.PLN) {
+                        return ct;
+                    } else {
+                        return CurrencyRepository.addVariation(ct);
+                    }
+                })
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     private static Map.Entry<CurrencyType, CurrencyEntity> addVariation(Map.Entry<CurrencyType, CurrencyEntity> entry) {
-        double maxDelta = 0.2;
-        double minDelta = -0.2;
+        double maxDelta = 0.01;
+        double minDelta = -0.01;
         double delta = random(minDelta, maxDelta);
         CurrencyEntity currencyEntityOld = entry.getValue();
-        CurrencyEntity currencyEntity = new CurrencyEntity(currencyEntityOld.getPurchaseValue() + delta,
-                currencyEntityOld.getSaleValue() + delta,
+
+        double newPurchaseValue = currencyEntityOld.getPurchaseValue() + delta < 0 ?
+            currencyEntityOld.getPurchaseValue() - 2 * delta :
+                currencyEntityOld.getPurchaseValue() + delta;
+        double newSaleValue = currencyEntityOld.getSaleValue() + delta < 0 ?
+                currencyEntityOld.getSaleValue() - 2*delta :
+                currencyEntityOld.getSaleValue() + delta;
+
+        CurrencyEntity currencyEntity = new CurrencyEntity(newPurchaseValue,
+                newSaleValue,
                 currencyEntityOld.getName());
         entry.setValue(currencyEntity);
         return entry;

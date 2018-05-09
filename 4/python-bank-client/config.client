@@ -2,7 +2,8 @@
 # The client reads this property to create the reference to the
 # "hello" object in the server.
 #
-Factory.Proxy=factory/accountFactory:tcp -h localhost -p 10001:udp -h localhost -p 10001:ssl -h localhost -p 10002
+Factory1.Proxy=factory/accountFactory:tcp -h localhost -p 10001:udp -h localhost -p 10001:ssl -h localhost -p 10002
+Factory2.Proxy=factory/accountFactory:tcp -h localhost -p 10006:udp -h localhost -p 10006:ssl -h localhost -p 10003
 
 #
 # Warn about connection exceptions.

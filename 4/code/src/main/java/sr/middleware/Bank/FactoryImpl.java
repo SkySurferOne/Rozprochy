@@ -1,9 +1,13 @@
 package sr.middleware.Bank;
 
+import Ice.Communicator;
 import Ice.Current;
 import Ice.Identity;
+import Ice.ObjectAdapter;
+import sr.middleware.CurrencyService.CurrencyEntity;
 import sr.middleware.slice.*;
 
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
@@ -13,20 +17,24 @@ public class FactoryImpl extends _FactoryDisp {
 
     private final Ice.ObjectAdapter adapter;
     private final ConcurrentHashMap<UUID, UserEntity> userStorage;
+    private ConcurrentHashMap<String, CurrencyEntity> currencyStorage;
     private final Ice.Communicator communicator;
     private final String bankServerHost;
     private final String bankServerPort;
     private final long incomeThreshold = 2000;
 
     public FactoryImpl(ConcurrentHashMap<UUID, UserEntity> userStorage,
+                       ConcurrentHashMap<String, CurrencyEntity> currencyStorage,
                        Ice.ObjectAdapter adapter, Ice.Communicator communicator,
                        String bankServerHost, String bankServerPort) {
         this.adapter = adapter;
         this.userStorage = userStorage;
+        this.currencyStorage = currencyStorage;
         this.communicator = communicator;
         this.bankServerHost = bankServerHost;
         this.bankServerPort = bankServerPort;
     }
+
 
     @Override
     public String createAccount(UserInfo userInfo, Current __current) {
@@ -37,8 +45,8 @@ public class FactoryImpl extends _FactoryDisp {
         UUID uuid = UUID.randomUUID();
         userStorage.put(uuid, userEntity);
 
-        if (userType == UserEntity.UserType.STANDARD) {
-            PremiumUserImpl premiumUser = new PremiumUserImpl(userStorage);
+        if (userType == UserEntity.UserType.PREMIUM) {
+            PremiumUserImpl premiumUser = new PremiumUserImpl(userStorage, currencyStorage);
             adapter.add(premiumUser, new Identity(userEntity.getPeselNumber(), userEntity.getUserType().toString()));
         } else {
             StandardUserImpl standardUser = new StandardUserImpl(userStorage);

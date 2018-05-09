@@ -25,19 +25,21 @@ module sr
             double loanRateOtherCurrency;
             CurrencyType currencyType;
             int period;
+            double avgExchangeRate;
             double loanValue;
             double interestRate;
         };
 
         exception PermissionViolation {};
         exception UserDoesNotExist {};
+        exception NotSupportedCurrency {};
 
         interface StandardUser {
             double checkAccountStatus(string id) throws UserDoesNotExist;
         };
 
         interface PremiumUser extends StandardUser {
-            LoanInfo getLoanInfo(CurrencyType currencyType, double loanValue, int period);
+            LoanInfo getLoanInfo(CurrencyType currencyType, double loanValue, int period) throws NotSupportedCurrency;
         };
 
         interface Factory {

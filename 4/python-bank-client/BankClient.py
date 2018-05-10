@@ -102,6 +102,10 @@ class BankClient(Ice.Application):
             return None
 
     def loan_info(self):
+        if self.user is None:
+            print('You cannot perform this operation. You have to login to premium account.')
+            return
+
         if not self.user.is_premium:
             print('You cannot perform this operation. You have to have a premium account.')
             return

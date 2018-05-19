@@ -21,6 +21,9 @@ public class BookstoreActor extends AbstractActor {
                 .match(OrderRequest.class, orderRequest -> {
                     context().child("orderActor").get().forward(orderRequest, context());
                 })
+                .match(StreamTextRequest.class, streamTextRequest -> {
+                    context().child("streamTextActor").get().forward(streamTextRequest, context());
+                })
                 .match(SearchResponse.class, searchResponse -> {
                     if (searchResponse.isPassToOrderActor()) {
                         context().child("orderActor").get().forward(searchResponse, context());
@@ -39,6 +42,7 @@ public class BookstoreActor extends AbstractActor {
     public void preStart() throws Exception {
         context().actorOf(Props.create(SearchActor.class), "searchActor");
         context().actorOf(Props.create(OrderActor.class), "orderActor");
+        context().actorOf(Props.create(StreamTextActor.class), "streamTextActor");
     }
 
     private static SupervisorStrategy strategy

@@ -18,6 +18,7 @@ public class ClientMain {
             System.out.println("Provide config file name as argument.");
             return;
         }
+        help();
 
         File configFile = new File(args[0]);
         Config config = ConfigFactory.parseFile(configFile);
@@ -35,6 +36,9 @@ public class ClientMain {
                 if (line.equals("q")) {
                     break;
                 }
+                if (line.equals("h")) {
+                    help();
+                }
                 actorRef.tell(line, null);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -42,6 +46,13 @@ public class ClientMain {
         }
 
         system.terminate();
+    }
+
+    private static void help() {
+        System.out.println("Commands: \n" +
+                "search <title part>\n" +
+                "order <title part>\n" +
+                "read");
     }
 
 }

@@ -3,10 +3,7 @@ package sr.agh.akka.client;
 import akka.actor.AbstractActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
-import sr.agh.akka.server.OrderRequest;
-import sr.agh.akka.server.OrderResponse;
-import sr.agh.akka.server.SearchRequest;
-import sr.agh.akka.server.SearchResponse;
+import sr.agh.akka.server.*;
 
 public class ClientWorkerActor extends AbstractActor {
     private final LoggingAdapter log = Logging.getLogger(getContext().getSystem(), this);
@@ -28,6 +25,11 @@ public class ClientWorkerActor extends AbstractActor {
                                     .tell(new OrderRequest(s.substring(s.indexOf(" ") + 1)),
                                             getSelf());
                             break;
+                        case "read":
+                            getContext().actorSelection(SERVER_PATH + "bookstore")
+                                    .tell(new StreamTextRequest("a_tale_of_two_cities-charles_dickens.txt"),
+                                            getSelf());
+                            break;
                         default:
                             System.out.println("There is not such a command.");
                     }
@@ -42,6 +44,9 @@ public class ClientWorkerActor extends AbstractActor {
                 })
                 .match(OrderResponse.class, orderResponse -> {
                     System.out.println(orderResponse.getMessage());
+                })
+                .match(StreamTextResponse.class, streamTextResponse -> {
+                    System.out.println(streamTextResponse.getLine());
                 })
                 .matchAny(o -> log.info("Received unknown message."))
                 .build();

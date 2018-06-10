@@ -35,7 +35,6 @@ public class DataMonitor implements Watcher, StatCallback {
         String path = event.getPath();
 
         if (event.getType() == Event.EventType.None) {
-            // We are are being told that the state of the
             // connection has changed
             switch (event.getState()) {
                 case SyncConnected:
@@ -44,34 +43,29 @@ public class DataMonitor implements Watcher, StatCallback {
                         if (stat != null) {
                             watchChildren(znode);
                         }
-                    } catch (KeeperException e) {
-                        e.printStackTrace();
-                    } catch (InterruptedException e) {
+                    } catch (KeeperException | InterruptedException e) {
                         e.printStackTrace();
                     }
                     break;
                 case Expired:
-                    // It's all over
                     dead = true;
                     listener.closing(KeeperException.Code.SessionExpired);
                     break;
             }
         } else {
             if (path != null && path.equals(znode)) {
-                // Something has changed on the node, let's find out
                 zk.exists(znode, true, this, null);
 
                 try {
                     if (event.getType() == Event.EventType.NodeCreated) {
                         watchChildren(znode);
                     }
-                } catch (KeeperException e) {
-                    e.printStackTrace();
-                } catch (InterruptedException e) {
+                } catch (KeeperException | InterruptedException e) {
                     e.printStackTrace();
                 }
             }
         }
+
         if (chainedWatcher != null) {
             chainedWatcher.process(event);
         }
@@ -102,8 +96,6 @@ public class DataMonitor implements Watcher, StatCallback {
             try {
                 b = zk.getData(znode, false, null);
             } catch (KeeperException e) {
-                // We don't need to worry about recovering now. The watch
-                // callbacks will kick off any exception handling
                 e.printStackTrace();
             } catch (InterruptedException e) {
                 return;
@@ -117,7 +109,7 @@ public class DataMonitor implements Watcher, StatCallback {
         }
     }
 
-    public void watchChildren(String znodeName) throws KeeperException, InterruptedException {
+    private void watchChildren(String znodeName) throws KeeperException, InterruptedException {
         zk.getChildren(znodeName, new ChildrenWatcher(zk, znodeName));
     }
 

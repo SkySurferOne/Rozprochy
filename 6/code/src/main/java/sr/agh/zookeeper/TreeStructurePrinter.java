@@ -31,6 +31,7 @@ public class TreeStructurePrinter {
         for(int i = 0 ; i < level; i++) st.append('\t');
         st.append(POINTER);
         st.append(zNodeName);
+
         return new String(st);
     }
 }

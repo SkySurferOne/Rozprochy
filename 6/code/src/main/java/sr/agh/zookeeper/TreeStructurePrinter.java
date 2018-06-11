@@ -2,6 +2,7 @@ package sr.agh.zookeeper;
 
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.ZooKeeper;
+import org.apache.zookeeper.data.Stat;
 
 public class TreeStructurePrinter {
     private final static String POINTER = "-> ";
@@ -12,8 +13,11 @@ public class TreeStructurePrinter {
         this.zk = zooKeeper;
     }
 
-    public void print(String znode) {
-        printLevel(znode, BEGINNING_LEVEL);
+    public void print(String znode) throws KeeperException, InterruptedException {
+        Stat stat = zk.exists(znode, false);
+        if (stat != null) {
+            printLevel(znode, BEGINNING_LEVEL);
+        }
     }
 
     private void printLevel(String zNodeName, int level) {

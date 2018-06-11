@@ -1,5 +1,6 @@
 package sr.agh.zookeeper;
 
+import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.ZooKeeper;
 
 import java.io.BufferedReader;
@@ -32,7 +33,11 @@ public class CommandLine implements Runnable {
                 }
 
                 if (line.equals("p") || line.equals("print")) {
-                    treeStructurePrinter.print(znode);
+                    try {
+                        treeStructurePrinter.print(znode);
+                    } catch (KeeperException | InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
 
             } catch (IOException e) {
